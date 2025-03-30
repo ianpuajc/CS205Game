@@ -30,6 +30,7 @@ public class Main extends ApplicationAdapter {
     private Inventory inventory;
     private HotbarUI hotbarUI;
     private InventoryUI inventoryUI;
+    private InstructionRegisterUI irUI;
     private DragAndDrop dragAndDrop;
 
     @Override
@@ -53,6 +54,11 @@ public class Main extends ApplicationAdapter {
 
         Texture[] itemTextures = {itemTexture1, itemTexture2};
 
+        // processes
+        Texture greenTex = new Texture("process_green.png");
+        Texture blueTex = new Texture("process_blue.png");
+        Texture redTex = new Texture("process_red.png");
+
         // Populate with random items
         Random random = new Random();
         for (int i = 0; i < 12; i++) {
@@ -75,6 +81,15 @@ public class Main extends ApplicationAdapter {
             (Gdx.graphics.getWidth() - inventoryUI.getWidth()) / 2,
             (Gdx.graphics.getHeight() - inventoryUI.getHeight()) / 2
         ); // Center when visible
+
+        // Initialize IR
+        irUI = new InstructionRegisterUI(
+            gameLevel.getInstructionRegister(),
+            inventory,
+            greenTex, blueTex, redTex
+        );
+        stage.addActor(irUI);
+
 
         // Add listener to toggle inventory
         hotbarUI.getInventoryButton().addListener(new ClickListener() {
@@ -147,6 +162,7 @@ public class Main extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         hotbarUI.update();
         inventoryUI.update();
+        irUI.update();
 
         float deltaTime = Gdx.graphics.getDeltaTime();
         gameLevel.update(deltaTime);
