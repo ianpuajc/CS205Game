@@ -2,6 +2,7 @@ package io.game;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.math.Vector2;
 
 public class InputHandler {
     private Player player;
@@ -16,8 +17,20 @@ public class InputHandler {
     }
 
     public void update(float deltaTime) {
-        float moveX = touchpad.getKnobPercentX() * player.speed * deltaTime;
-        float moveY = touchpad.getKnobPercentY() * player.speed * deltaTime;
-        player.move(moveX, moveY, gameLevel.getObstacles());
+        float knobPercentX = touchpad.getKnobPercentX();
+        float knobPercentY = touchpad.getKnobPercentY();
+
+        // Calculate movement based on touchpad input
+        float moveX = knobPercentX * player.getSpeed() * deltaTime;
+        float moveY = knobPercentY * player.getSpeed() * deltaTime;
+
+        // Update player's position and animation state
+        if (moveX != 0 || moveY != 0) {
+            Vector2 direction = new Vector2(knobPercentX, knobPercentY).nor();
+            player.move(moveX, moveY, gameLevel.getObstacles());
+            player.updateAnimationState(direction);
+        } else {
+            player.setIdleAnimation();
+        }
     }
 }
