@@ -9,6 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class InputHandler {
     private Player player;
@@ -20,16 +24,46 @@ public class InputHandler {
     private DragAndDrop dragAndDrop;
 
 
+
     public InputHandler(GameLevel gameLevel, Stage stage) {
         this.gameLevel = gameLevel;
         this.player = gameLevel.getPlayer();
         this.touchpad = TouchpadController.createTouchpad();
         stage.addActor(touchpad);
         setupInventory(stage);
+        setUpRightInteractButton(stage);
 
     }
 
-    public void setupInventory(Stage stage){
+    private void setUpRightInteractButton(Stage stage){
+        Texture buttonTexture = new Texture("button.png");
+        Drawable upDrawable = new TextureRegionDrawable(new TextureRegion(buttonTexture));
+
+        ImageButton.ImageButtonStyle buttonStyle = new ImageButton.ImageButtonStyle();
+
+        buttonStyle.up = upDrawable;
+
+        ImageButton imageButton = new ImageButton(buttonStyle);
+
+
+
+        stage.addActor(imageButton);
+
+        imageButton.setSize(200, 200);
+
+        imageButton.setPosition(Gdx.graphics.getWidth() - 300, 100);
+
+        imageButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("ImageButton", "Button clicked!");
+            }
+        });
+
+
+    }
+
+    private void setupInventory(Stage stage){
 
         inventory = new Inventory(12);
 
