@@ -12,6 +12,7 @@ public class GameRenderer {
     private GameLevel gameLevel;
     private Stage stage;
 
+
     public GameRenderer(SpriteBatch batch, OrthographicCamera camera, GameLevel gameLevel, Stage stage) {
         this.batch = batch;
         this.camera = camera;
