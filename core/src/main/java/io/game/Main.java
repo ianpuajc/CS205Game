@@ -1,19 +1,35 @@
 package io.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.Game;
 
-public class Main extends ApplicationAdapter {
-    private SpriteBatch batch;
-    private OrthographicCamera camera;
+public class Main extends Game  {
+    public SpriteBatch batch;
+    public OrthographicCamera camera;
     private Stage stage;
     private GameLevel gameLevel;
     private GameRenderer renderer;
     private InputHandler inputHandler;
+
+    public void create() { // called on initial running
+        batch = new SpriteBatch();
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.position.set(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, 0);
+        camera.update();
+
+        setScreen(new GameMenuScreen(this));
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        getScreen().dispose();
+    }
+
+    /*
 
     @Override
     public void create() {
@@ -47,5 +63,9 @@ public class Main extends ApplicationAdapter {
         batch.dispose();
         gameLevel.dispose();
         stage.dispose();
-    }
+    }*/
+
+
+
+
 }

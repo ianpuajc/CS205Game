@@ -1,19 +1,70 @@
 package io.game;
 
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class InputHandler {
     private Player player;
     private Touchpad touchpad;
     private GameLevel gameLevel;
+    private Inventory inventory;
+    private HotbarUI hotbarUI;
+    private InventoryUI inventoryUI;
+    private DragAndDrop dragAndDrop;
+
 
     public InputHandler(GameLevel gameLevel, Stage stage) {
         this.gameLevel = gameLevel;
         this.player = gameLevel.getPlayer();
         this.touchpad = TouchpadController.createTouchpad();
         stage.addActor(touchpad);
+        setupInventory(stage);
+
+    }
+
+    public void setupInventory(Stage stage){
+
+        inventory = new Inventory(12);
+
+        Texture slotTexture = new Texture("lineLight06.png");
+        Texture inventoryIcon = new Texture("inventory_icon.png");
+
+
+        // Initialize HotbarUI
+        hotbarUI = new HotbarUI(inventory, slotTexture, inventoryIcon);
+        stage.addActor(hotbarUI);
+        hotbarUI.setPosition((Gdx.graphics.getWidth() - hotbarUI.getWidth()) / 2, 96); // Bottom of the screen
+
+        // Initialize InventoryUI (hidden by default)
+        inventoryUI = new InventoryUI(inventory, slotTexture);
+        inventoryUI.setVisible(false);
+        stage.addActor(inventoryUI);
+        inventoryUI.setPosition(
+            (Gdx.graphics.getWidth() - inventoryUI.getWidth()) / 2,
+            (Gdx.graphics.getHeight() - inventoryUI.getHeight()) / 2
+        ); // Center when visible
+
+        hotbarUI.getInventoryButton().addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                inventoryUI.setVisible(!inventoryUI.isVisible());
+            }
+        });
+
+        dragAndDrop = new DragAndDrop();
+        for (Slot slot : hotbarUI.getSlots()) {
+            addDragAndDrop(dragAndDrop, slot);
+        }
+        for (Slot slot : inventoryUI.getSlots()) {
+            addDragAndDrop(dragAndDrop, slot);
+        }
     }
 
     public void update(float deltaTime) {
@@ -32,5 +83,51 @@ public class InputHandler {
         } else {
             player.setIdleAnimation();
         }
+
+        updateUI();
+        hotbarUI.update();
+        inventoryUI.update();
+    }
+
+
+    private void addDragAndDrop(DragAndDrop dragAndDrop, Slot slot) {
+        dragAndDrop.addSource(new DragAndDrop.Source(slot) {
+            @Override
+            public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
+                Item item = inventory.getItem(slot.getIndex());
+                if (item == null) return null;
+                DragAndDrop.Payload payload = new DragAndDrop.Payload();
+                payload.setObject(item);
+                payload.setDragActor(new Image(item.getTexture()));
+                return payload;
+            }
+        });
+
+        dragAndDrop.addTarget(new DragAndDrop.Target(slot) {
+            @Override
+            public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
+                return true;
+            }
+
+            @Override
+            public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
+                Slot sourceSlot = (Slot) source.getActor();
+                Slot targetSlot = (Slot) getActor();
+                int sourceIndex = sourceSlot.getIndex();
+                int targetIndex = targetSlot.getIndex();
+                Item temp = inventory.getItem(sourceIndex);
+                inventory.setItem(sourceIndex, inventory.getItem(targetIndex));
+                inventory.setItem(targetIndex, temp);
+                updateUI();
+            }
+        });
+    }
+
+    private void updateUI() {
+        for (Slot slot : hotbarUI.getSlots()) {
+            Item item = inventory.getItem(slot.getIndex());
+            slot.setItemTexture(item != null ? item.getTexture() : null);
+        }
+        inventoryUI.update();
     }
 }

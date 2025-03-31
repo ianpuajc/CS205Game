@@ -15,7 +15,7 @@ public class Player {
     private Animation<TextureRegion> walkRightAnimation;
     private TextureRegion idleFrame;
 
-    final private int Wall_boundary = 260
+    final private int Wall_boundary = 260;
     private Vector2 position;
     private Rectangle bounds;
     private float speed = 500;

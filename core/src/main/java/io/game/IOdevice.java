@@ -1,6 +1,6 @@
 package io.game;
 
-public class IOdevice extends Obstacle{
+/*public class IOdevice extends Obstacle{
 
     private Animation<TextureRegion> activationAnimation;
     private float stateTime;
@@ -43,4 +43,4 @@ public class IOdevice extends Obstacle{
     public boolean isActive() {
         return isActive;
     }
-}
+}*/
