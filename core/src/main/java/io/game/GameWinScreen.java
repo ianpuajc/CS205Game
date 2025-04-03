@@ -13,78 +13,76 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class GameMenuScreen implements Screen {
+public class GameWinScreen implements Screen {
     private Main game;
     private Stage stage;
     private Skin skin;
     private Texture backgroundTexture;
+    private int nextLevel;
 
-    public GameMenuScreen(Main game) {
+    public GameWinScreen(Main game, int currentLevel) {
         this.game = game;
+        this.nextLevel = currentLevel + 1; // Calculate next level
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        // Load a skin for your UI (make sure "uiskin.json" is in your assets)
+        // Load UI assets
         skin = new Skin(Gdx.files.internal("uiskin.json"));
-
-        // Load background art (place "menu_background.png" in your assets folder)
-        backgroundTexture = new Texture("menu_background.png");
+        backgroundTexture = new Texture("win_background.png"); // Create this asset
         Image background = new Image(backgroundTexture);
         background.setFillParent(true);
         stage.addActor(background);
 
-        // Create a table for layout.
+        // Layout
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        // Create level buttons.
-        TextButton level1Button = new TextButton("play game", skin);
-        TextButton instructionsButton = new TextButton("Instructions", skin);
+        // Buttons
+        //TextButton nextLevelButton = new TextButton("Next Level", skin);
+        TextButton menuButton = new TextButton("Back to Menu", skin);
 
-        // Add listeners for level selection.
-        level1Button.addListener(new ChangeListener() {
+        // Button listeners
+//        nextLevelButton.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                if (LevelLoader.levelExists(nextLevel)) {
+//                    game.setScreen(new GameLevelScreen(game, nextLevel));
+//                } else {
+//                    game.setScreen(new GameMenuScreen(game)); // No more levels
+//                }
+//            }
+//        });
+
+        menuButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameLevelScreen(game, 1));
-            }
-        });
-        // Listener for instructions.
-        instructionsButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameInstructionsScreen(game));
+                game.setScreen(new GameMenuScreen(game));
             }
         });
 
-        // Add buttons to the table with some spacing.
-        table.add(level1Button).size(400, 150).pad(10);
-        table.row();
-        table.add(instructionsButton).size(400, 150).pad(10);
+        // Add buttons with padding
+        //table.add(nextLevelButton).pad(20).row();
+        table.add(menuButton).pad(20);
     }
 
     @Override
-    public void show() { }
-
-    @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0,0,0,1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
     }
 
-    @Override
-    public void resize(int width, int height) {
+    // Other required Screen methods...
+    @Override public void show() {}
+    @Override public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
     }
-
-    @Override public void pause() { }
-    @Override public void resume() { }
-    @Override public void hide() { }
-
-    @Override
-    public void dispose() {
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
+    @Override public void dispose() {
         stage.dispose();
         skin.dispose();
         backgroundTexture.dispose();

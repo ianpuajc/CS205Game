@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.Input;  // Add this at the top of your file
 
 public class InputHandler {
     private Player player;
@@ -57,6 +58,11 @@ public class InputHandler {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("ImageButton", "Button clicked!");
+
+                // Short vibration feedback
+                if (Gdx.input.isPeripheralAvailable(Input.Peripheral.Vibrator)) {
+                    Gdx.input.vibrate(50); // Vibrates for 50 milliseconds
+                }
             }
         });
 
