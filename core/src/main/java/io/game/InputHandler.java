@@ -26,14 +26,14 @@ public class InputHandler {
 
 
 
-    public InputHandler(GameLevel gameLevel, Stage stage) {
+    public InputHandler(GameLevel gameLevel, Stage stage, Inventory inventory) {
         this.gameLevel = gameLevel;
         this.player = gameLevel.getPlayer();
+        this.inventory = inventory; // use the one passed in
         this.touchpad = TouchpadController.createTouchpad();
         stage.addActor(touchpad);
         setupInventory(stage);
         setUpRightInteractButton(stage);
-
     }
 
     private void setUpRightInteractButton(Stage stage){
@@ -71,7 +71,7 @@ public class InputHandler {
 
     private void setupInventory(Stage stage){
 
-        inventory = new Inventory(12);
+//        inventory = new Inventory(12);
 
         Texture slotTexture = new Texture("lineLight06.png");
         Texture inventoryIcon = new Texture("inventory_icon.png");

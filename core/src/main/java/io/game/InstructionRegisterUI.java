@@ -3,11 +3,13 @@ package io.game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
+import java.util.Collections;
 import java.util.List;
 
 public class InstructionRegisterUI extends Table {
@@ -15,64 +17,78 @@ public class InstructionRegisterUI extends Table {
     private Inventory inventory;
     private Texture greenTexture, blueTexture, redTexture;
 
+    private Texture singleUndone, singleDone;
+    private Texture doubleUndone, doubleHalfA, doubleHalfB, doubleDone;
+
     public InstructionRegisterUI(InstructionRegister instructionRegister,
                                  Inventory inventory,
-                                 Texture greenTexture,
-                                 Texture blueTexture,
-                                 Texture redTexture) {
+                                 Texture singleUndone,
+                                 Texture singleDone,
+                                 Texture doubleUndone,
+                                 Texture doubleHalfA,
+                                 Texture doubleHalfB,
+                                 Texture doubleDone) {
         this.instructionRegister = instructionRegister;
         this.inventory = inventory;
 
-        this.greenTexture = greenTexture;
-        this.blueTexture = blueTexture;
-        this.redTexture = redTexture;
+        this.singleUndone = singleUndone;
+        this.singleDone = singleDone;
+        this.doubleUndone = doubleUndone;
+        this.doubleHalfA = doubleHalfA;
+        this.doubleHalfB = doubleHalfB;
+        this.doubleDone = doubleDone;
 
         align(Align.topLeft);
-        pad(20);
+        pad(10);
         setFillParent(true);
+        setTouchable(Touchable.enabled);
     }
 
     public void update() {
         clear(); // Clear the table before redrawing everything
 
         List<Process> processes = instructionRegister.getAllProcesses();
+        Collections.reverse(processes); // make oldest at bottom
 
-        for (Process process : processes) {
-            Image processIcon = new Image(getTextureForColor(process.getColor()));
+        for (final Process process : processes) {
+            Image processIcon = new Image(getTextureForProcess(process));
+            processIcon.setTouchable(Touchable.enabled);
 
-            // Darken icon based on how many steps are completed
-            float progress = (float) process.getStepsCompletedCount() / process.getTotalStepsCount();
-            float brightness = 1.0f - (0.5f * progress); // full dark at 100%
-            processIcon.setColor(brightness, brightness, brightness, 1);
-
-            // Add a click listener to pick up the process
+            // Debug log to ensure click is working
             processIcon.addListener(new ClickListener() {
+                @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    System.out.println("Clicked process: " + process.getId());
+
                     int freeSlot = getFirstEmptySlot();
                     if (freeSlot != -1) {
                         instructionRegister.removeProcess(process);
-
-                        Texture icon = getTextureForColor(process.getColor());
-                        ProcessItem item = new ProcessItem(icon, process.getId(), process);
-                        inventory.setItem(freeSlot, item);
+                        Texture icon = getTextureForProcess(process);
+                        inventory.setItem(freeSlot, new ProcessItem(icon, process.getId(), process));
                     } else {
-                        System.out.println("Inventory full!"); // Optional: show popup or sound
+                        System.out.println("Inventory full!");
                     }
                 }
             });
 
-            // Add the icon to the UI
-            add(processIcon).size(128).pad(8);
+            row(); // vertical stacking
+            add(processIcon).size(128).pad(4).left();
         }
     }
 
-    private Texture getTextureForColor(Process.ProcessColor color) {
-        switch (color) {
-            case GREEN: return greenTexture;
-            case BLUE:  return blueTexture;
-            case RED:   return redTexture;
-            default:    return greenTexture;
+    public Texture getTextureForProcess(Process process) {
+        int done = process.getStepsCompletedCount();
+        int total = process.getTotalStepsCount();
+
+        if (total == 1) {
+            return done == 1 ? singleDone : singleUndone;
+        } else if (total == 2) {
+            if (done == 0) return doubleUndone;
+            if (done == 1) return doubleHalfA; // or doubleHalfB
+            return doubleDone;
         }
+
+        return singleUndone; // fallback
     }
 
     private int getFirstEmptySlot() {
