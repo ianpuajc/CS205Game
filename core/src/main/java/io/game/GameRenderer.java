@@ -12,11 +12,14 @@ public class GameRenderer {
     private GameLevel gameLevel;
     private Stage stage;
 
+    private Player player;
+
     public GameRenderer(SpriteBatch batch, OrthographicCamera camera, GameLevel gameLevel, Stage stage) {
         this.batch = batch;
         this.camera = camera;
         this.gameLevel = gameLevel;
         this.stage = stage;
+        this.player = gameLevel.getPlayer();
     }
 
     public void render() {
@@ -25,7 +28,8 @@ public class GameRenderer {
 
         batch.begin();
         batch.draw(gameLevel.getBackground(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.draw(gameLevel.getPlayer().getTexture(), gameLevel.getPlayer().getPosition().x, gameLevel.getPlayer().getPosition().y);
+        batch.draw(player.getCurrentFrame(), player.getPosition().x, player.getPosition().y);
+
         for (Obstacle obstacle : gameLevel.getObstacles()) {
             batch.draw(obstacle.getTexture(), obstacle.getBounds().x, obstacle.getBounds().y, obstacle.getBounds().width, obstacle.getBounds().height);
         }
