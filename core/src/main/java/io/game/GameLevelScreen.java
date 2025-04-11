@@ -47,6 +47,9 @@ public class GameLevelScreen implements Screen {
         stage.addActor(irUI);
         irUI.toFront();
         irUI.setTouchable(Touchable.enabled);
+        irUI.setVisible(true);   // Make sure it's not hidden
+        irUI.pack();             // Force layout sizing
+        irUI.invalidateHierarchy(); // Recalculate children bounds/layouts
 
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
         this.exitButton = new ExitButton(skin, game);
@@ -54,7 +57,9 @@ public class GameLevelScreen implements Screen {
 
         renderer = new GameRenderer(game.batch, game.camera, gameLevel, stage);
         inputHandler = new InputHandler(gameLevel, stage, inventory);
+
         Gdx.input.setInputProcessor(stage);
+        stage.setDebugAll(true);
     }
 
     @Override

@@ -37,7 +37,7 @@ public abstract class GameLevel {
     }
 
     private Process.ProcessColor randomProcessColor() {
-        int r = (int)(Math.random() * 3);
+        int r = (int)(Math.random() * 2);
         return Process.ProcessColor.values()[r];
     }
 
