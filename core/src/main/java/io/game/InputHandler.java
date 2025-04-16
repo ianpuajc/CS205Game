@@ -36,6 +36,30 @@ public class InputHandler {
         setUpRightInteractButton(stage);
     }
 
+    public Texture getTextureForProcess(Process process) {
+
+        Texture singleUndone =  new Texture("Overclocked Assets/Data Packets/Single_Undone.PNG");
+        Texture singleDone = new Texture("Overclocked Assets/Data Packets/Single_Done.PNG");
+        Texture doubleUndone = new Texture("Overclocked Assets/Data Packets/Double_Undone.PNG");
+        Texture doubleHalfA = new Texture("Overclocked Assets/Data Packets/Double_HalfA.PNG");
+        Texture doubleHalfB = new Texture("Overclocked Assets/Data Packets/Double_HalfB.PNG");
+        Texture doubleDone = new Texture("Overclocked Assets/Data Packets/Double_Done.PNG");
+
+
+        int done = process.getStepsCompletedCount();
+        int total = process.getTotalStepsCount();
+
+        if (total == 1) {
+            return done == 1 ? singleDone : singleUndone;
+        } else if (total == 2) {
+            if (done == 0) return doubleUndone;
+            if (done == 1) return doubleHalfA; // or doubleHalfB
+            return doubleDone;
+        }
+
+        return singleUndone; // fallback
+    }
+
     private void setUpRightInteractButton(Stage stage){
         Texture buttonTexture = new Texture("button.png");
         Drawable upDrawable = new TextureRegionDrawable(new TextureRegion(buttonTexture));
@@ -46,7 +70,7 @@ public class InputHandler {
 
         ImageButton imageButton = new ImageButton(buttonStyle);
 
-
+        InstructionRegister instructionRegister = gameLevel.getInstructionRegister();
 
         stage.addActor(imageButton);
 
@@ -61,11 +85,31 @@ public class InputHandler {
 
                 // Short vibration feedback
                 if (Gdx.input.isPeripheralAvailable(Input.Peripheral.Vibrator)) {
-                    Gdx.input.vibrate(50); // Vibrates for 50 milliseconds
+                    Gdx.input.vibrate(50);
+                }
+
+                // Get a process from the instruction register
+                if (!instructionRegister.isEmpty()) {
+
+                    if (inventory.getItem(inventory.getSelectedHotbarIndex()) == null) {
+                        Process process = instructionRegister.remove();
+
+                        if (process != null) {
+                            // Convert process to ProcessItem
+                            Item item = new ProcessItem(process, getTextureForProcess(process));
+
+                            // Add to selected inventory slot
+                            int slot = inventory.getSelectedHotbarIndex();
+                            inventory.setItem(slot, item);
+
+                            Gdx.app.log("Inventory", "Added ProcessItem to slot " + slot);
+                        }
+                    }
+                } else {
+                    Gdx.app.log("InstructionRegister", "No process to retrieve.");
                 }
             }
         });
-
 
     }
 

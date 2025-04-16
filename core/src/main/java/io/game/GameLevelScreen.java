@@ -35,12 +35,12 @@ public class GameLevelScreen implements Screen {
         irUI = new InstructionRegisterUI(
             gameLevel.getInstructionRegister(),
             inventory,
-            new Texture("Overclocked Assets/Data Packets/Single_Undone.png"),
-            new Texture("Overclocked Assets/Data Packets/Single_Done.png"),
-            new Texture("Overclocked Assets/Data Packets/Double_Undone.png"),
-            new Texture("Overclocked Assets/Data Packets/Double_HalfA.png"),
-            new Texture("Overclocked Assets/Data Packets/Double_HalfB.png"),
-            new Texture("Overclocked Assets/Data Packets/Double_Done.png")
+            new Texture("Overclocked Assets/Data Packets/Single_Undone.PNG"),
+            new Texture("Overclocked Assets/Data Packets/Single_Done.PNG"),
+            new Texture("Overclocked Assets/Data Packets/Double_Undone.PNG"),
+            new Texture("Overclocked Assets/Data Packets/Double_HalfA.PNG"),
+            new Texture("Overclocked Assets/Data Packets/Double_HalfB.PNG"),
+            new Texture("Overclocked Assets/Data Packets/Double_Done.PNG")
         );
 
         // 3. Add it to the stage

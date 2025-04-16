@@ -39,7 +39,7 @@ public class InstructionRegisterUI extends Table {
         this.doubleDone = doubleDone;
 
         align(Align.topLeft);
-        pad(10);
+        pad(100);
         setFillParent(true);
         setTouchable(Touchable.enabled);
     }
