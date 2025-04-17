@@ -138,6 +138,10 @@ public class Player {
 
     public float getSpeed() {return speed;}
 
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
     public void dispose() {
         walkUpAnimation.getKeyFrames()[0].getTexture().dispose();
         walkDownAnimation.getKeyFrames()[0].getTexture().dispose();

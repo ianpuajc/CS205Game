@@ -91,5 +91,7 @@ public class GameLevelScreen implements Screen {
     public void dispose() {
         stage.dispose();
         gameLevel.dispose();
+        renderer.dispose(); // Dispose the HUD font too
+
     }
 }

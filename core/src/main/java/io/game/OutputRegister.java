@@ -1,5 +1,6 @@
 package io.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -30,35 +31,24 @@ public class OutputRegister extends Obstacle {
         return registerTexture;
     }
 
-    /**
-     * Attempts to submit a ProcessItem to the output register.
-     * If the Process inside the item is completed, the register updates the score
-     * according to the process color:
-     *   - GREEN: CPU only = 5 points
-     *   - BLUE: CPU + I/O Module = 10 points
-     *   - RED: CPU + I/O Module + CPU = 15 points
-     *
-     * @param item The process item being submitted.
-     * @return true if the process is completed and accepted; false otherwise.
-     */
     public boolean submitProcess(ProcessItem item) {
-        if (item.getProcess().isCompleted()) {
-            switch (item.getProcess().getColor()) {
-                case GREEN:
-                    score += 5;
-                    break;
-                case BLUE:
-                    score += 10;
-                    break;
-                case RED:
-                    score += 15;
-                    break;
-            }
-            // Store the submitted item if you want to display it
-            submittedProcessItem = item;
-            return true;
+        Process.ProcessColor color = item.getProcess().getColor();
+        Gdx.app.log("OutputRegister", "Submitted item color: " + color); // ✅ Add this
+
+        switch (color) {
+            case GREEN:
+                score += 50;
+                break;
+            case RED:
+                score += 100;
+                break;
+            default:
+                Gdx.app.log("OutputRegister", "⚠️ Unknown color: " + color);
+                break;
         }
-        return false;
+
+        submittedProcessItem = item;
+        return true;
     }
 
     /**

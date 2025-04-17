@@ -83,32 +83,70 @@ public class InputHandler {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("ImageButton", "Button clicked!");
 
-                // Short vibration feedback
                 if (Gdx.input.isPeripheralAvailable(Input.Peripheral.Vibrator)) {
                     Gdx.input.vibrate(50);
                 }
 
-                // Get a process from the instruction register
-                if (!instructionRegister.isEmpty()) {
+                // ✅ First: Try submitting to OutputRegister
+                for (Obstacle obstacle : gameLevel.getObstacles()) {
+                    if (obstacle instanceof OutputRegister) {
+                        OutputRegister outputRegister = (OutputRegister) obstacle;
 
-                    if (inventory.getItem(inventory.getSelectedHotbarIndex()) == null) {
-                        Process process = instructionRegister.remove();
+                        float playerX = player.getBounds().x;
+                        float playerY = player.getBounds().y;
+                        float registerX = outputRegister.getBounds().x;
+                        float registerY = outputRegister.getBounds().y;
 
-                        if (process != null) {
-                            // Convert process to ProcessItem
-                            Item item = new ProcessItem(process, getTextureForProcess(process));
+                        float playerCenterX = playerX + player.getBounds().width / 2f;
+                        float playerCenterY = playerY + player.getBounds().height / 2f;
+                        float registerCenterX = registerX + outputRegister.getBounds().width / 2f;
+                        float registerCenterY = registerY + outputRegister.getBounds().height / 2f;
 
-                            // Add to selected inventory slot
+                        float dx = playerCenterX - registerCenterX;
+                        float dy = playerCenterY - registerCenterY;
+                        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < 150f) {
                             int slot = inventory.getSelectedHotbarIndex();
-                            inventory.setItem(slot, item);
+                            Item item = inventory.getItem(slot);
 
-                            Gdx.app.log("Inventory", "Added ProcessItem to slot " + slot);
+                            if (item instanceof ProcessItem) {
+                                boolean accepted = outputRegister.submitProcess((ProcessItem) item);
+                                if (accepted) {
+                                    inventory.setItem(slot, null);
+                                    Gdx.app.log("OutputRegister", "✅ Item submitted and accepted.");
+                                    return; // Exit after successful submission
+                                } else {
+                                    Gdx.app.log("OutputRegister", "❌ Process rejected.");
+                                    return;
+                                }
+                            } else {
+                                Gdx.app.log("OutputRegister", "⚠️ No valid item in selected slot.");
+                            }
                         }
                     }
+                }
+
+                // ✅ If submission failed or not near output, try retrieving process
+                InstructionRegister instructionRegister = gameLevel.getInstructionRegister();
+
+                if (!instructionRegister.isEmpty()) {
+                    int slot = inventory.getSelectedHotbarIndex();
+                    if (inventory.getItem(slot) == null) {
+                        Process process = instructionRegister.remove();
+                        if (process != null) {
+                            Item item = new ProcessItem(process, getTextureForProcess(process));
+                            inventory.setItem(slot, item);
+                            Gdx.app.log("Inventory", "📥 Retrieved ProcessItem into slot " + slot);
+                        }
+                    } else {
+                        Gdx.app.log("Inventory", "Selected slot not empty: " + slot);
+                    }
                 } else {
-                    Gdx.app.log("InstructionRegister", "No process to retrieve.");
+                    Gdx.app.log("InstructionRegister", "📭 No process to retrieve.");
                 }
             }
+
         });
 
     }
