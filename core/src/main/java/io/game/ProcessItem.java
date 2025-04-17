@@ -10,6 +10,13 @@ public class ProcessItem extends Item {
         this.process = process;
     }
 
+    public ProcessItem(Process process, Texture texture){
+        super(texture);
+        this.process = process;
+    }
+
+
+
     public Process getProcess() {
         return process;
     }

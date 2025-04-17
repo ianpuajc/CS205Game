@@ -2,7 +2,7 @@ package io.game;
 
 public class Level1 extends GameLevel {
     public Level1() {
-        super("background1.png"); // Set specific background
+        super("Overclocked Assets/Background and Deco/Background.PNG"); // Set specific background
     }
 
     @Override
