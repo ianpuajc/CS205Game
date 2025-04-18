@@ -7,18 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class ExitButton extends TextButton {
 
-    public ExitButton(Skin skin, final Main game) {
-        super("X", skin);
-        setupButton(game);
-    }
-
-    private void setupButton(final Main game) {
-        this.setSize(50, 50);
-
-        this.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameMenuScreen(game));
+    public ExitButton(Skin skin, final GameLevelScreen level) {
+        super("⏸", skin);          // pause icon / text
+        setSize(50, 50);
+        addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                level.pauseGame();  // show pause overlay
             }
         });
     }

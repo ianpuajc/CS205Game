@@ -39,16 +39,18 @@ public class GameMenuScreen implements Screen {
         stage.addActor(table);
 
         // Create level buttons.
-        TextButton level1Button = new TextButton("play game", skin);
+        TextButton level1Button = new TextButton("Play Game", skin);
         TextButton instructionsButton = new TextButton("Instructions", skin);
+        TextButton leaderboardButton = new TextButton("Leaderboard", skin); // New button
 
-        // Add listeners for level selection.
+        // Add listener for playing the game.
         level1Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.setScreen(new GameLevelScreen(game, 1));
             }
         });
+
         // Listener for instructions.
         instructionsButton.addListener(new ChangeListener() {
             @Override
@@ -57,10 +59,20 @@ public class GameMenuScreen implements Screen {
             }
         });
 
+        // Listener for leaderboard.
+        leaderboardButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new LeaderboardScreen(game));
+            }
+        });
+
         // Add buttons to the table with some spacing.
         table.add(level1Button).size(400, 150).pad(10);
         table.row();
         table.add(instructionsButton).size(400, 150).pad(10);
+        table.row();
+        table.add(leaderboardButton).size(400, 150).pad(10);
     }
 
     @Override
@@ -68,7 +80,7 @@ public class GameMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0,0,0,1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
