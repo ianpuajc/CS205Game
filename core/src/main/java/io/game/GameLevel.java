@@ -3,6 +3,7 @@ package io.game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class GameLevel {
     protected Player player;
@@ -11,6 +12,9 @@ public abstract class GameLevel {
     private InstructionRegister instructionRegister;
     private float spawnTimer = 0f;
     private final float PROCESS_SPAWN_INTERVAL = 5f;
+    private ConcurrentLinkedQueue<Process> processQueue = new ConcurrentLinkedQueue<>();
+    private Thread spawnThread;
+    private boolean running = true;
 
     public GameLevel(String backgroundPath) {
         player = new Player();
@@ -18,6 +22,7 @@ public abstract class GameLevel {
         background = new Texture(backgroundPath); // Load background image
         instructionRegister = new InstructionRegister(3);
         setupLevel();
+        startSpawningThread();
     }
 
     protected abstract void setupLevel();
@@ -25,15 +30,27 @@ public abstract class GameLevel {
     public void update(float deltaTime) {
         player.update(deltaTime, obstacles);
 
-        // Auto-spawn processes
-        spawnTimer += deltaTime;
-        if (spawnTimer >= PROCESS_SPAWN_INTERVAL) {
-            spawnTimer = 0f;
-            if (!instructionRegister.isFull()) {
-                Process.ProcessColor color = randomProcessColor();
-                instructionRegister.addProcess(new Process("P" + System.currentTimeMillis(), color));
-            }
+        while (!processQueue.isEmpty() && !instructionRegister.isFull()) {
+            instructionRegister.addProcess(processQueue.poll());
         }
+    }
+
+    private void startSpawningThread() {
+        spawnThread = new Thread(() -> {
+            while (running) {
+                try {
+                    Thread.sleep((long) (PROCESS_SPAWN_INTERVAL * 1000)); // 5s delay
+                } catch (InterruptedException e) {
+                    break;
+                }
+
+                if (!instructionRegister.isFull()) {
+                    Process.ProcessColor color = randomProcessColor();
+                    processQueue.add(new Process("P" + System.currentTimeMillis(), color));
+                }
+            }
+        });
+        spawnThread.start();
     }
 
     private Process.ProcessColor randomProcessColor() {
@@ -51,6 +68,9 @@ public abstract class GameLevel {
     }
 
     public void dispose() {
+        running = false;
+        spawnThread.interrupt();
+
         player.dispose();
         background.dispose(); // Dispose of background texture
         for (Obstacle obstacle : obstacles) {
