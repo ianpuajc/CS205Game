@@ -52,7 +52,7 @@ public class GameLevelScreen implements Screen {
         irUI.invalidateHierarchy(); // Recalculate children bounds/layouts
 
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-        this.exitButton = new ExitButton(skin, game);
+        this.exitButton = new ExitButton(skin, this);
         stage.addActor(exitButton);
 
         renderer = new GameRenderer(game.batch, game.camera, gameLevel, stage);
@@ -60,6 +60,23 @@ public class GameLevelScreen implements Screen {
 
         Gdx.input.setInputProcessor(stage);
         stage.setDebugAll(true);
+    }
+
+    public void exitLevel() {
+        int finalScore = 0;
+
+        /* fetch the current score from the OutputRegister */
+        for (Obstacle o : gameLevel.getObstacles()) {
+            if (o instanceof OutputRegister) {
+                finalScore = ((OutputRegister) o).getScore();
+                break;
+            }
+        }
+
+        /* 1️⃣  add to leaderboard */
+        game.leaderboard.addScore(finalScore);
+
+        game.setScreen(new GameMenuScreen(game));
     }
 
     @Override

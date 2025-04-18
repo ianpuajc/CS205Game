@@ -23,9 +23,11 @@ public class Main extends Game  {
     private HotbarUI hotbarUI;
     private InventoryUI inventoryUI;
     private InstructionRegisterUI irUI;
+    public LeaderboardManager leaderboard;
 
     public void create() { // called on initial running
         batch = new SpriteBatch();
+        leaderboard = new LeaderboardManager();
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.position.set(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, 0);
         camera.update();

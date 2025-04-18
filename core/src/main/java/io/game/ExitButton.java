@@ -7,18 +7,18 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class ExitButton extends TextButton {
 
-    public ExitButton(Skin skin, final Main game) {
+    public ExitButton(Skin skin, final GameLevelScreen game) {
         super("X", skin);
         setupButton(game);
     }
 
-    private void setupButton(final Main game) {
+    private void setupButton(final GameLevelScreen game) {
         this.setSize(50, 50);
 
         this.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameMenuScreen(game));
+                game.exitLevel();          // <── call the helper on the screen
             }
         });
     }
