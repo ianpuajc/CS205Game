@@ -2,75 +2,98 @@ package io.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.utils.Array;
 
 public class OutputRegister extends Obstacle {
-    // Unique texture for the output register background
-    private Texture registerTexture;
+
+    private Texture idleTexture;
+    private TextureRegion currentFrame;
+    private Animation<TextureRegion> submissionAnimation;
+
+    private boolean isAnimating = false;
+    private float stateTime = 0f;
+
     private int score;
     private BitmapFont font;
-    // Holds the last submitted process item (if you want to show it)
     private ProcessItem submittedProcessItem;
 
     public OutputRegister(float x, float y, float width, float height) {
-        // Call Obstacle constructor to set up the bounds.
         super(x, y, width, height);
-        // Load the output register's unique texture.
-        registerTexture = new Texture("monitor_idle.png");
+
+        idleTexture = new Texture("Overclocked Assets/Workstations/Monitor_Idle.PNG");
+        currentFrame = new TextureRegion(idleTexture);
+        loadAnimation();
+
         score = 0;
         font = new BitmapFont();
     }
 
-    /**
-     * Override getTexture() so that when the game draws this obstacle using getTexture(),
-     * it will use the output register's texture.
-     */
-    @Override
-    public Texture getTexture() {
-        return registerTexture;
+    private void loadAnimation() {
+        Array<TextureRegion> frames = new Array<>();
+
+        for (int i = 1; i <= 19; i++) {
+            String filename = (i < 10)
+                ? "Overclocked Assets/Workstations/Monitor_Loading/Monitor_Loading_000" + i + ".png"
+                : "Overclocked Assets/Workstations/Monitor_Loading/Monitor_Loading_00" + i + ".png";
+            Texture frameTexture = new Texture(filename);
+            frames.add(new TextureRegion(frameTexture));
+        }
+
+        submissionAnimation = new Animation<>(0.05f, frames);
+        submissionAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+    }
+
+    public void update(float delta) {
+        if (isAnimating) {
+            stateTime += delta;
+            currentFrame = submissionAnimation.getKeyFrame(stateTime, false);
+
+            if (submissionAnimation.isAnimationFinished(stateTime)) {
+                isAnimating = false;
+                stateTime = 0f;
+                currentFrame = new TextureRegion(idleTexture);
+            }
+        }
     }
 
     public boolean submitProcess(ProcessItem item) {
         Process.ProcessColor color = item.getProcess().getColor();
-        Gdx.app.log("OutputRegister", "Submitted item color: " + color); // ✅ Add this
+        Gdx.app.log("OutputRegister", "Submitted item color: " + color);
 
-        switch (color) {
-            case GREEN:
-                score += 50;
-                break;
-            case RED:
-                score += 100;
-                break;
-            default:
-                Gdx.app.log("OutputRegister", "⚠️ Unknown color: " + color);
-                break;
+        if (item.getProcess().isCompleted() && !isAnimating) {
+            isAnimating = true;
+            switch (color) {
+                case GREEN:
+                    score += 50;
+                    break;
+                case RED:
+                    score += 100;
+                    break;
+                default:
+                    Gdx.app.log("OutputRegister", "⚠️ Unknown color: " + color);
+                    break;
+            }
+
+            // Start animation
+
+            stateTime = 0f;
+
+            return true;
         }
 
         submittedProcessItem = item;
-        return true;
+        return false;
     }
 
-    /**
-     * Returns the current score.
-     */
     public int getScore() {
         return score;
     }
 
-    /**
-     * Draws the output register including its background, score, and, if available,
-     * the submitted process item.
-     *
-     * @param batch The SpriteBatch used for drawing.
-     */
     public void draw(SpriteBatch batch) {
-        // Draw the output register background using its unique texture.
-        batch.draw(registerTexture, getBounds().x, getBounds().y, getBounds().width, getBounds().height);
-        // Draw the score above the register.
+        batch.draw(currentFrame, getBounds().x, getBounds().y, getBounds().width, getBounds().height);
         font.draw(batch, "Score: " + score, getBounds().x, getBounds().y + getBounds().height + 20);
 
-        // If a ProcessItem was submitted, draw its texture centered in the register area.
         if (submittedProcessItem != null) {
             Texture itemTexture = submittedProcessItem.getTexture();
             float itemWidth = itemTexture.getWidth();
@@ -81,16 +104,15 @@ public class OutputRegister extends Obstacle {
         }
     }
 
-    /**
-     * Disposes of textures and font to free resources.
-     * We deliberately do not call super.dispose() here to avoid disposing of the Obstacle texture,
-     * which may be shared elsewhere (such as in the inventory UI).
-     */
+    @Override
+    public Texture getTexture() {
+        return currentFrame.getTexture(); // For consistency
+    }
+
     @Override
     public void dispose() {
-        // Note: We no longer call super.dispose(), so the obstacle texture remains intact.
-        registerTexture.dispose();
+        idleTexture.dispose();
         font.dispose();
+        // Optionally dispose animation textures if needed, depending on resource handling
     }
 }
-

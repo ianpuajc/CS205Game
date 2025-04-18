@@ -15,6 +15,10 @@ public class ProcessItem extends Item {
         this.process = process;
     }
 
+    public void setTexture(Texture newTexture) {
+        this.texture = newTexture;
+    }
+
 
 
     public Process getProcess() {

@@ -53,8 +53,21 @@ public class GameRenderer {
 
         // Draw the total score at top center of screen
         for (Obstacle o : gameLevel.getObstacles()) {
+            if (o instanceof HardDrive){
+                HardDrive hardDrive = (HardDrive)o;
+                hardDrive.update(Gdx.graphics.getDeltaTime());
+                batch.draw(hardDrive.getCurrentFrame(), hardDrive.getBounds().x, hardDrive.getBounds().y, hardDrive.getBounds().width, hardDrive.getBounds().height);
+
+            }
+            if (o instanceof GPU) {
+                GPU gpu = (GPU) o;
+                gpu.update(Gdx.graphics.getDeltaTime());
+                batch.draw(gpu.getCurrentFrame(), gpu.getBounds().x, gpu.getBounds().y, gpu.getBounds().width, gpu.getBounds().height);
+            }
             if (o instanceof OutputRegister) {
                 OutputRegister output = (OutputRegister) o;
+                output.update(Gdx.graphics.getDeltaTime());
+                batch.draw(output.getTexture(), output.getBounds().x, output.getBounds().y, output.getBounds().width, output.getBounds().height);
                 String scoreText = "Score: " + output.getScore();
 
                 layout.setText(scoreFont, scoreText);
@@ -86,8 +99,14 @@ public class GameRenderer {
         batch.draw(gameLevel.getBackground(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.draw(player.getCurrentFrame(), player.getPosition().x, player.getPosition().y);
 
+
         for (Obstacle obstacle : gameLevel.getObstacles()) {
-            batch.draw(obstacle.getTexture(), obstacle.getBounds().x, obstacle.getBounds().y, obstacle.getBounds().width, obstacle.getBounds().height);
+            if (obstacle instanceof GPU) {
+                GPU gpu = (GPU) obstacle;
+                batch.draw(gpu.getCurrentFrame(), gpu.getBounds().x, gpu.getBounds().y, gpu.getBounds().width, gpu.getBounds().height);
+            } else {
+                batch.draw(obstacle.getTexture(), obstacle.getBounds().x, obstacle.getBounds().y, obstacle.getBounds().width, obstacle.getBounds().height);
+            }
         }
 
         // Draw the total score at top center of screen

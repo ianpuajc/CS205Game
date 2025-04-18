@@ -3,7 +3,7 @@ package io.game;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Item {
-    private Texture texture;
+    Texture texture;
     private String name;
 
     public Item(Texture texture, String name) {

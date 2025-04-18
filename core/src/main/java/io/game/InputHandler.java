@@ -125,6 +125,36 @@ public class InputHandler {
                             }
                         }
                     }
+
+                    if (obstacle instanceof GPU) {
+                        GPU gpu = (GPU) obstacle;
+
+                        float playerX = player.getBounds().x;
+                        float playerY = player.getBounds().y;
+
+                        if (gpu.isInRange(playerX, playerY)) {
+                            boolean interacted = gpu.interact(inventory);
+                            if (interacted) {
+                                Gdx.app.log("GPU", "✅ Interaction successful.");
+                            }
+                        }
+                    } else if (obstacle instanceof HardDrive) {
+                        HardDrive hardDrive = (HardDrive) obstacle;
+
+                        float playerX = player.getBounds().x;
+                        float playerY = player.getBounds().y;
+
+                        // Check if player is in range of the HardDrive
+                        if (hardDrive.isInRange(playerX, playerY)) {
+                            // Try to interact with the HardDrive
+                            boolean interacted = hardDrive.interact(inventory);
+
+                            // If interaction is successful, log the result
+                            if (interacted) {
+                                Gdx.app.log("HardDrive", "✅ Interaction successful.");
+                            }
+                        }
+                    }
                 }
 
                 // ✅ If submission failed or not near output, try retrieving process
