@@ -20,10 +20,12 @@ public class GameOverOverlay {
     private final Label scoreLabel;
     private final Stage stage;
     private final Main  game;
+    private GameLevel gameLevel;
 
-    GameOverOverlay(Stage stage, Main game) {
+    GameOverOverlay(Stage stage, Main game, GameLevel gameLevel) {
         this.stage = stage;
         this.game = game;
+        this.gameLevel = gameLevel;
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         root = new Table(skin);
@@ -42,7 +44,14 @@ public class GameOverOverlay {
         content.align(Align.center);
 
         Label title = new Label("GAME OVER", skin);
-        scoreLabel = new Label("Score: 0", skin);
+
+        int score = 0;
+        for(Obstacle o : gameLevel.getObstacles()){
+            if(o instanceof OutputRegister){
+                score = ((OutputRegister) o).getScore();
+            }
+        }
+        scoreLabel = new Label("Score: " + score, skin);
 
         TextButton menu = new TextButton("Main Menu", skin);
         menu.addListener(new ChangeListener() {

@@ -67,8 +67,8 @@ public class GameLevelScreen implements Screen {
 
         Gdx.input.setInputProcessor(stage);
         stage.setDebugAll(true);
-
-        gameOverUI = new GameOverOverlay(stage, game);   // create overlay actors but hidden
+i
+        gameOverUI = new GameOverOverlay(stage, game, gameLevel);   // create overlay actors but hidden
         pauseUI    = new PauseOverlay(   stage, this);
     }
 
