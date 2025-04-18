@@ -7,6 +7,7 @@ public class Level1 extends GameLevel {
 
     @Override
     protected void setupLevel() {
-
+        // Add the output register at the desired position (for example, where the red box should be)
+        obstacles.add(new OutputRegister(1700, 500, 150, 200));
     }
 }

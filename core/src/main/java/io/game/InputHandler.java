@@ -26,14 +26,38 @@ public class InputHandler {
 
 
 
-    public InputHandler(GameLevel gameLevel, Stage stage) {
+    public InputHandler(GameLevel gameLevel, Stage stage, Inventory inventory) {
         this.gameLevel = gameLevel;
         this.player = gameLevel.getPlayer();
+        this.inventory = inventory; // use the one passed in
         this.touchpad = TouchpadController.createTouchpad();
         stage.addActor(touchpad);
         setupInventory(stage);
         setUpRightInteractButton(stage);
+    }
 
+    public Texture getTextureForProcess(Process process) {
+
+        Texture singleUndone =  new Texture("Overclocked Assets/Data Packets/Single_Undone.PNG");
+        Texture singleDone = new Texture("Overclocked Assets/Data Packets/Single_Done.PNG");
+        Texture doubleUndone = new Texture("Overclocked Assets/Data Packets/Double_Undone.PNG");
+        Texture doubleHalfA = new Texture("Overclocked Assets/Data Packets/Double_HalfA.PNG");
+        Texture doubleHalfB = new Texture("Overclocked Assets/Data Packets/Double_HalfB.PNG");
+        Texture doubleDone = new Texture("Overclocked Assets/Data Packets/Double_Done.PNG");
+
+
+        int done = process.getStepsCompletedCount();
+        int total = process.getTotalStepsCount();
+
+        if (total == 1) {
+            return done == 1 ? singleDone : singleUndone;
+        } else if (total == 2) {
+            if (done == 0) return doubleUndone;
+            if (done == 1) return doubleHalfA; // or doubleHalfB
+            return doubleDone;
+        }
+
+        return singleUndone; // fallback
     }
 
     private void setUpRightInteractButton(Stage stage){
@@ -46,7 +70,7 @@ public class InputHandler {
 
         ImageButton imageButton = new ImageButton(buttonStyle);
 
-
+        InstructionRegister instructionRegister = gameLevel.getInstructionRegister();
 
         stage.addActor(imageButton);
 
@@ -59,19 +83,77 @@ public class InputHandler {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("ImageButton", "Button clicked!");
 
-                // Short vibration feedback
                 if (Gdx.input.isPeripheralAvailable(Input.Peripheral.Vibrator)) {
-                    Gdx.input.vibrate(50); // Vibrates for 50 milliseconds
+                    Gdx.input.vibrate(50);
+                }
+
+                // ✅ First: Try submitting to OutputRegister
+                for (Obstacle obstacle : gameLevel.getObstacles()) {
+                    if (obstacle instanceof OutputRegister) {
+                        OutputRegister outputRegister = (OutputRegister) obstacle;
+
+                        float playerX = player.getBounds().x;
+                        float playerY = player.getBounds().y;
+                        float registerX = outputRegister.getBounds().x;
+                        float registerY = outputRegister.getBounds().y;
+
+                        float playerCenterX = playerX + player.getBounds().width / 2f;
+                        float playerCenterY = playerY + player.getBounds().height / 2f;
+                        float registerCenterX = registerX + outputRegister.getBounds().width / 2f;
+                        float registerCenterY = registerY + outputRegister.getBounds().height / 2f;
+
+                        float dx = playerCenterX - registerCenterX;
+                        float dy = playerCenterY - registerCenterY;
+                        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < 150f) {
+                            int slot = inventory.getSelectedHotbarIndex();
+                            Item item = inventory.getItem(slot);
+
+                            if (item instanceof ProcessItem) {
+                                boolean accepted = outputRegister.submitProcess((ProcessItem) item);
+                                if (accepted) {
+                                    inventory.setItem(slot, null);
+                                    Gdx.app.log("OutputRegister", "✅ Item submitted and accepted.");
+                                    return; // Exit after successful submission
+                                } else {
+                                    Gdx.app.log("OutputRegister", "❌ Process rejected.");
+                                    return;
+                                }
+                            } else {
+                                Gdx.app.log("OutputRegister", "⚠️ No valid item in selected slot.");
+                            }
+                        }
+                    }
+                }
+
+                // ✅ If submission failed or not near output, try retrieving process
+                InstructionRegister instructionRegister = gameLevel.getInstructionRegister();
+
+                if (!instructionRegister.isEmpty()) {
+                    int slot = inventory.getSelectedHotbarIndex();
+                    if (inventory.getItem(slot) == null) {
+                        Process process = instructionRegister.remove();
+                        if (process != null) {
+                            Item item = new ProcessItem(process, getTextureForProcess(process));
+                            inventory.setItem(slot, item);
+                            Gdx.app.log("Inventory", "📥 Retrieved ProcessItem into slot " + slot);
+                        }
+                    } else {
+                        Gdx.app.log("Inventory", "Selected slot not empty: " + slot);
+                    }
+                } else {
+                    Gdx.app.log("InstructionRegister", "📭 No process to retrieve.");
                 }
             }
-        });
 
+        });
 
     }
 
     private void setupInventory(Stage stage){
 
-        inventory = new Inventory(12);
+//        inventory = new Inventory(12);
 
         Texture slotTexture = new Texture("lineLight06.png");
         Texture inventoryIcon = new Texture("inventory_icon.png");

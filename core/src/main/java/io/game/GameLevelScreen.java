@@ -3,7 +3,9 @@ package io.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -16,6 +18,8 @@ public class GameLevelScreen implements Screen {
     private InputHandler inputHandler;
     private Stage stage;
     private final ExitButton exitButton;
+    private InstructionRegisterUI irUI;
+    private Inventory inventory;
 
     public GameLevelScreen(Main game, int levelNumber) {
         this.game = game;
@@ -24,13 +28,38 @@ public class GameLevelScreen implements Screen {
         // Load the level based on levelNumber.
         gameLevel = LevelLoader.loadLevel(levelNumber);
 
+        // 1. Create inventory to hold process items
+        inventory = new Inventory(12);
+
+        // 2. Create and attach IR UI with textures
+        irUI = new InstructionRegisterUI(
+            gameLevel.getInstructionRegister(),
+            inventory,
+            new Texture("Overclocked Assets/Data Packets/Single_Undone.PNG"),
+            new Texture("Overclocked Assets/Data Packets/Single_Done.PNG"),
+            new Texture("Overclocked Assets/Data Packets/Double_Undone.PNG"),
+            new Texture("Overclocked Assets/Data Packets/Double_HalfA.PNG"),
+            new Texture("Overclocked Assets/Data Packets/Double_HalfB.PNG"),
+            new Texture("Overclocked Assets/Data Packets/Double_Done.PNG")
+        );
+
+        // 3. Add it to the stage
+        stage.addActor(irUI);
+        irUI.toFront();
+        irUI.setTouchable(Touchable.enabled);
+        irUI.setVisible(true);   // Make sure it's not hidden
+        irUI.pack();             // Force layout sizing
+        irUI.invalidateHierarchy(); // Recalculate children bounds/layouts
+
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
         this.exitButton = new ExitButton(skin, game);
         stage.addActor(exitButton);
 
         renderer = new GameRenderer(game.batch, game.camera, gameLevel, stage);
-        inputHandler = new InputHandler(gameLevel, stage);
+        inputHandler = new InputHandler(gameLevel, stage, inventory);
+
         Gdx.input.setInputProcessor(stage);
+        stage.setDebugAll(true);
     }
 
     @Override
@@ -42,6 +71,7 @@ public class GameLevelScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameLevel.update(delta);
         inputHandler.update(delta);
+        irUI.update();
         renderer.render();
         stage.act(delta);
         stage.draw();
@@ -61,5 +91,7 @@ public class GameLevelScreen implements Screen {
     public void dispose() {
         stage.dispose();
         gameLevel.dispose();
+        renderer.dispose(); // Dispose the HUD font too
+
     }
 }

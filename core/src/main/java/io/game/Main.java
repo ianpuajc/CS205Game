@@ -1,8 +1,14 @@
 package io.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.Game;
 
@@ -13,6 +19,10 @@ public class Main extends Game  {
     private GameLevel gameLevel;
     private GameRenderer renderer;
     private InputHandler inputHandler;
+    private Inventory inventory;
+    private HotbarUI hotbarUI;
+    private InventoryUI inventoryUI;
+    private InstructionRegisterUI irUI;
 
     public void create() { // called on initial running
         batch = new SpriteBatch();
@@ -37,6 +47,7 @@ public class Main extends Game  {
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.position.set(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, 0);
         camera.update();
+        inventory = new Inventory(12);
 
         stage = new Stage(new ScreenViewport());
         loadLevel(LevelLoader.getCurrentLevel());

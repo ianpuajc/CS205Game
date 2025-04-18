@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Process {
     public enum StepType { CPU, IO }
-    public enum ProcessColor { GREEN, BLUE, RED }
+    public enum ProcessColor { GREEN, RED }
 
     private String id;
     private Set<StepType> stepsDone;
@@ -21,14 +21,9 @@ public class Process {
             case GREEN:
                 requiredSteps.add(StepType.CPU);
                 break;
-            case BLUE:
-                requiredSteps.add(StepType.CPU);
-                requiredSteps.add(StepType.IO);
-                break;
             case RED:
                 requiredSteps.add(StepType.CPU);
                 requiredSteps.add(StepType.IO);
-                requiredSteps.add(StepType.CPU); // duplicated CPU
                 break;
         }
     }
