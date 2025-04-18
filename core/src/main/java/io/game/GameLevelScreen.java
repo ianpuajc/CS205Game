@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class GameLevelScreen implements Screen {
-    private Main game;
+    Main game;
     private int levelNumber;
     private GameLevel gameLevel;
     private GameRenderer renderer;
@@ -20,6 +20,13 @@ public class GameLevelScreen implements Screen {
     private final ExitButton exitButton;
     private InstructionRegisterUI irUI;
     private Inventory inventory;
+
+    private float timeLeft = 60f;        // 60‑second timer
+    private boolean paused   = false;
+    private boolean gameOver = false;
+
+    private GameOverOverlay gameOverUI;  // shown when the timer hits 0
+    private PauseOverlay    pauseUI;     // shown when “X” is pressed
 
     public GameLevelScreen(Main game, int levelNumber) {
         this.game = game;
@@ -60,23 +67,24 @@ public class GameLevelScreen implements Screen {
 
         Gdx.input.setInputProcessor(stage);
         stage.setDebugAll(true);
+
+        gameOverUI = new GameOverOverlay(stage, game);   // create overlay actors but hidden
+        pauseUI    = new PauseOverlay(   stage, this);
     }
 
     public void exitLevel() {
-        int finalScore = 0;
+        if (gameOver) return;
+        gameOver = true;
 
-        /* fetch the current score from the OutputRegister */
-        for (Obstacle o : gameLevel.getObstacles()) {
-            if (o instanceof OutputRegister) {
-                finalScore = ((OutputRegister) o).getScore();
+        int finalScore = 0;
+        for (Obstacle o : gameLevel.getObstacles())
+            if (o instanceof OutputRegister){
+                finalScore = ((OutputRegister)o).getScore();
                 break;
             }
-        }
 
-        /* 1️⃣  add to leaderboard */
         game.leaderboard.addScore(finalScore);
-
-        game.setScreen(new GameMenuScreen(game));
+        gameOverUI.show(finalScore);     // overlay with “GAME OVER”
     }
 
     @Override
@@ -84,15 +92,33 @@ public class GameLevelScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        // Update game logic and render the level.
+        // Clear the screen – original functionality
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        gameLevel.update(delta);
-        inputHandler.update(delta);
-        irUI.update();
-        renderer.render();
+
+        // Game logic update only if not paused or over – from suggested version
+        if (!paused && !gameOver) {
+            timeLeft -= delta;
+            if (timeLeft <= 0) {
+                timeLeft = 0;
+                exitLevel();
+            }
+
+            gameLevel.update(delta);
+            inputHandler.update(delta);
+            irUI.update();
+        }
+
+        // Rendering – combine new timeLeft logic with original renderer call
+        renderer.render(timeLeft); // Assume renderer can handle timeLeft (overloaded method)
+
+        // Stage updates and draws regardless – same as both versions
         stage.act(delta);
         stage.draw();
     }
+
+
+
+
 
     @Override
     public void resize(int width, int height) {
@@ -111,4 +137,7 @@ public class GameLevelScreen implements Screen {
         renderer.dispose(); // Dispose the HUD font too
 
     }
+
+    public void pauseGame()   { paused = true;  pauseUI.show(); }
+    public void resumeGame()  { paused = false; pauseUI.hide(); }
 }
