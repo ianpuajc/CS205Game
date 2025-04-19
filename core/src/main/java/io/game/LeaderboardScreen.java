@@ -4,8 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -31,6 +33,12 @@ public class LeaderboardScreen implements Screen {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         leaderboardManager = new LeaderboardManager();
 
+        // Load background art (place "menu_background.png" in your assets folder)
+        Texture backgroundTexture = new Texture("leaderboard_bg.png");
+        Image background = new Image(backgroundTexture);
+        background.setFillParent(true);
+        stage.addActor(background);
+
         // Create and setup the table that will hold our leaderboard entries and buttons.
         table = new Table();
         table.setFillParent(true);
@@ -49,12 +57,12 @@ public class LeaderboardScreen implements Screen {
         ArrayList<Integer> scores = leaderboardManager.getScores();
 
         if (scores.isEmpty()) {
-            Label noScoresLabel = new Label("No scores yet", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+            Label noScoresLabel = new Label("No scores yet", new Label.LabelStyle(new BitmapFont(), Color.BLACK));
             table.add(noScoresLabel).pad(10);
             table.row();
         } else {
             for (int i = 0; i < scores.size(); i++) {
-                Label scoreLabel = new Label("Rank " + (i + 1) + ": " + scores.get(i), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+                Label scoreLabel = new Label("Rank " + (i + 1) + ": " + scores.get(i), new Label.LabelStyle(new BitmapFont(), Color.BLACK));
                 table.add(scoreLabel).pad(10);
                 table.row();
             }

@@ -28,7 +28,7 @@ public class GameMenuScreen implements Screen {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         // Load background art (place "menu_background.png" in your assets folder)
-        backgroundTexture = new Texture("menu_background.png");
+        backgroundTexture = new Texture("menu_bg2.png");
         Image background = new Image(backgroundTexture);
         background.setFillParent(true);
         stage.addActor(background);

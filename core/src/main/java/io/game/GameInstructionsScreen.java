@@ -2,8 +2,11 @@ package io.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -22,6 +25,12 @@ public class GameInstructionsScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         skin = new Skin(Gdx.files.internal("uiskin.json"));
+
+        // Load background art (place "menu_background.png" in your assets folder)
+        Texture backgroundTexture = new Texture("instruction_bg.png");
+        Image background = new Image(backgroundTexture);
+        background.setFillParent(true);
+        stage.addActor(background);
 
         Table table = new Table();
         table.setFillParent(true);
@@ -43,8 +52,12 @@ public class GameInstructionsScreen implements Screen {
                 "- Once a process is completely green, submit it to the Output Register to gain points.",
             skin
         );
+
+        instructionsLabel.setColor(Color.valueOf("#000000"));
+
+
         // Button to go back to the menu.
-        TextButton backButton = new TextButton("Back to Menu", skin);
+        TextButton backButton = new TextButton("Back", skin);
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -52,9 +65,10 @@ public class GameInstructionsScreen implements Screen {
             }
         });
 
+
         table.add(instructionsLabel).pad(10);
         table.row();
-        table.add(backButton).pad(10);
+        table.add(backButton).size(200, 80).pad(10);
     }
 
     @Override

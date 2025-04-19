@@ -21,7 +21,7 @@ public class GameLevelScreen implements Screen {
     private InstructionRegisterUI irUI;
     private Inventory inventory;
 
-    private float timeLeft = 60f;        // 60‑second timer
+    private float timeLeft = 120f;        // 120‑second timer
     private boolean paused   = false;
     private boolean gameOver = false;
 

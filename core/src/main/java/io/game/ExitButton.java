@@ -11,13 +11,15 @@ public class ExitButton extends TextButton {
         super("⏸", skin);          // pause icon / text
         setSize(50, 50);
         addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
+            @Override
+            public void changed(ChangeEvent e, Actor a) {
                 level.pauseGame();  // show pause overlay
             }
         });
     }
 
     public void updatePosition(float screenWidth, float screenHeight) {
-        this.setPosition(screenWidth - 60, screenHeight - 60);
+        float padding = 10f;
+        this.setPosition(padding, screenHeight - getHeight() - padding);
     }
 }
