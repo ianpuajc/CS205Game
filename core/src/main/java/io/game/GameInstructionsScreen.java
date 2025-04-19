@@ -29,9 +29,20 @@ public class GameInstructionsScreen implements Screen {
 
         // Set up instructions text.
         Label instructionsLabel = new Label(
-            "Controls:\n- Use arrow keys to move.\n- Press space to jump.\n\n" +
-                "Objective:\n- Complete levels in sequence to unlock the next level.",
-            skin);
+            "Objective:\n" +
+                "- Submit as many finished processes as possible to the Output Register.\n\n" +
+                "Controls:\n" +
+                "- Bottom Left: Touchpad to move around and interact with IO devices.\n" +
+                "- Bottom Center: Inventory to collect processes. Tap squares to select inventory spaces. Tap the square with 3 dots to open more inventory slots. Drag and drop to rearrange.\n" +
+                "- Bottom Right: Interact Button.\n\n" +
+                "Gameplay:\n" +
+                "- Processes are created in the Instruction Register Overlay (top left).\n" +
+                "- Use the Interact Button to place them into a selected inventory square.\n" +
+                "- Interact with GPUs to progress a selected process, and retrieve it once done.\n" +
+                "- Half-finished processes require interaction with the Hard Disk.\n" +
+                "- Once a process is completely green, submit it to the Output Register to gain points.",
+            skin
+        );
         // Button to go back to the menu.
         TextButton backButton = new TextButton("Back to Menu", skin);
         backButton.addListener(new ChangeListener() {
