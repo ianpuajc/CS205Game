@@ -99,9 +99,6 @@ public class HardDrive extends Obstacle {
             }
             process.completeStep(Process.StepType.IO);
 
-            // Replace with "Double_Done" texture only
-
-
             inventory.setItem(slot, storedProcessItem);
 
             storedProcessItem = null;
