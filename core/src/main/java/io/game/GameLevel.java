@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class GameLevel {
     protected Player player;
@@ -13,6 +14,7 @@ public abstract class GameLevel {
     private float spawnTimer = 0f;
     private final float PROCESS_SPAWN_INTERVAL = 5f;
     private ConcurrentLinkedQueue<Process> processQueue = new ConcurrentLinkedQueue<>();
+    private final ReentrantLock queueLock = new ReentrantLock(); // Mutex for processQueue
     private Thread spawnThread;
     private boolean running = true;
 
@@ -30,9 +32,18 @@ public abstract class GameLevel {
     public void update(float deltaTime) {
         player.update(deltaTime, obstacles);
 
-        while (!processQueue.isEmpty() && !instructionRegister.isFull()) {
-            instructionRegister.addProcess(processQueue.poll());
+        queueLock.lock(); // Lock before accessing the queue
+        try {
+            while (!processQueue.isEmpty() && !instructionRegister.isFull()) {
+                instructionRegister.addProcess(processQueue.poll());
+            }
+        } finally {
+            queueLock.unlock(); // Always unlock
         }
+    }
+
+    public ReentrantLock getQueueLock() {
+        return queueLock;
     }
 
     private void startSpawningThread() {
@@ -46,7 +57,12 @@ public abstract class GameLevel {
 
                 if (!instructionRegister.isFull()) {
                     Process.ProcessColor color = randomProcessColor();
-                    processQueue.add(new Process("P" + System.currentTimeMillis(), color));
+                    queueLock.lock(); // Lock before adding to queue
+                    try {
+                        processQueue.add(new Process("P" + System.currentTimeMillis(), color));
+                    } finally {
+                        queueLock.unlock();
+                    }
                 }
             }
         });

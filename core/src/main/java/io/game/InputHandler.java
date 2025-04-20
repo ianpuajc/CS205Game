@@ -15,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Input;  // Add this at the top of your file
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class InputHandler {
     private Player player;
     private Touchpad touchpad;
@@ -159,21 +161,27 @@ public class InputHandler {
 
                 // ✅ If submission failed or not near output, try retrieving process
                 InstructionRegister instructionRegister = gameLevel.getInstructionRegister();
+                ReentrantLock lock = gameLevel.getQueueLock();
 
-                if (!instructionRegister.isEmpty()) {
-                    int slot = inventory.getSelectedHotbarIndex();
-                    if (inventory.getItem(slot) == null) {
-                        Process process = instructionRegister.remove();
-                        if (process != null) {
-                            Item item = new ProcessItem(process, getTextureForProcess(process));
-                            inventory.setItem(slot, item);
-                            Gdx.app.log("Inventory", "📥 Retrieved ProcessItem into slot " + slot);
+                lock.lock();
+                try {
+                    if (!instructionRegister.isEmpty()) {
+                        int slot = inventory.getSelectedHotbarIndex();
+                        if (inventory.getItem(slot) == null) {
+                            Process process = instructionRegister.remove();
+                            if (process != null) {
+                                Item item = new ProcessItem(process, getTextureForProcess(process));
+                                inventory.setItem(slot, item);
+                                Gdx.app.log("Inventory", "📥 Retrieved ProcessItem into slot " + slot);
+                            }
+                        } else {
+                            Gdx.app.log("Inventory", "Selected slot not empty: " + slot);
                         }
                     } else {
-                        Gdx.app.log("Inventory", "Selected slot not empty: " + slot);
+                        Gdx.app.log("InstructionRegister", "📭 No process to retrieve.");
                     }
-                } else {
-                    Gdx.app.log("InstructionRegister", "📭 No process to retrieve.");
+                } finally {
+                    lock.unlock();
                 }
             }
 
