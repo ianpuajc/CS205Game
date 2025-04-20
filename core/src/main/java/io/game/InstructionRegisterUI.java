@@ -1,7 +1,6 @@
 package io.game;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -15,8 +14,6 @@ import java.util.List;
 public class InstructionRegisterUI extends Table {
     private InstructionRegister instructionRegister;
     private Inventory inventory;
-    private Texture greenTexture, blueTexture, redTexture;
-
     private Texture singleUndone, singleDone;
     private Texture doubleUndone, doubleHalfA, doubleHalfB, doubleDone;
 

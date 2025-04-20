@@ -124,11 +124,11 @@ public class GPU extends Obstacle {
         String basePath = "Overclocked Assets/Data Packets/";
 
         switch (process.getColor()) {
-            case GREEN:
+            case SINGLE:
                 return new Texture(basePath + "Single_Done.PNG");
 
 
-            case RED:
+            case DOUBLE:
                 if (process.isStepDone(Process.StepType.IO)) {
                     return new Texture(basePath + "Double_Done.PNG");
                 } else {

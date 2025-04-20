@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Process {
     public enum StepType { CPU, IO }
-    public enum ProcessColor { GREEN, RED }
+    public enum ProcessColor {SINGLE, DOUBLE}
 
     private String id;
     private Set<StepType> stepsDone;
@@ -18,10 +18,10 @@ public class Process {
         this.requiredSteps = new ArrayList<>();
 
         switch (color) {
-            case GREEN:
+            case SINGLE:
                 requiredSteps.add(StepType.CPU);
                 break;
-            case RED:
+            case DOUBLE:
                 requiredSteps.add(StepType.CPU);
                 requiredSteps.add(StepType.IO);
                 break;
@@ -64,9 +64,5 @@ public class Process {
 
     public int getTotalStepsCount() {
         return requiredSteps.size();
-    }
-
-    public List<StepType> getRequiredSteps() {
-        return requiredSteps;
     }
 }

@@ -64,10 +64,10 @@ public class OutputRegister extends Obstacle {
         if (item.getProcess().isCompleted() && !isAnimating) {
             isAnimating = true;
             switch (color) {
-                case GREEN:
+                case SINGLE:
                     score += 50;
                     break;
-                case RED:
+                case DOUBLE:
                     score += 100;
                     break;
                 default:

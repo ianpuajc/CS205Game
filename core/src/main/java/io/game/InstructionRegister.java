@@ -19,10 +19,6 @@ public class InstructionRegister {
         return false;
     }
 
-    public Process peek() {
-        return processQueue.peek();
-    }
-
     public Process remove() {
         return processQueue.poll();
     }
@@ -37,10 +33,6 @@ public class InstructionRegister {
 
     public boolean isEmpty() {
         return processQueue.isEmpty();
-    }
-
-    public Queue<Process> getQueue() {
-        return processQueue;
     }
 
     public List<Process> getAllProcesses() {

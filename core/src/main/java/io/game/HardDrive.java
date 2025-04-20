@@ -2,7 +2,6 @@ package io.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.utils.Timer;
 
 public class HardDrive extends Obstacle {
 
@@ -73,7 +72,7 @@ public class HardDrive extends Obstacle {
 
         if (!isActive && !workComplete && item instanceof ProcessItem && storedProcessItem == null) {
             ProcessItem pi = (ProcessItem) item;
-            if (pi.getProcess().getColor() != Process.ProcessColor.RED) {
+            if (pi.getProcess().getColor() != Process.ProcessColor.DOUBLE) {
                 return false; // only accepts RED (case) processes
             }
 

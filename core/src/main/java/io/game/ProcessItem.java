@@ -19,8 +19,6 @@ public class ProcessItem extends Item {
         this.texture = newTexture;
     }
 
-
-
     public Process getProcess() {
         return process;
     }
